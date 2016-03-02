@@ -8,6 +8,6 @@
 "dataset" : "GleambookUsers",
 "primary_key" : "id",
 "operation" : "insert",
-"updates_file" : "/tmp/bigFUN/files/inserts.adm",
-"stats_file" : "/tmp/bigFUN/files/stats.txt"
+"updates_file" : "/tmp/insert.adm",
+"stats_file" : "/tmp/stats.txt"
 }
