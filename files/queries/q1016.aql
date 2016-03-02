@@ -1,0 +1,20 @@
+for $t1 in dataset ChirpMessages
+where $t1.send_time >= 
+@PARAM
+and
+$t1.send_time < 
+@PARAM
+let $n := create-circle($t1.sender_location, 
+@PARAM
+)
+return {
+"chirpid": $t1.chirpid,
+"nearby-chirps":
+	for $t2 in dataset ChirpMessages
+	where spatial-intersect($t2.sender_location,$n) 
+	and $t1.chirpid != $t2.chirpid
+        let $d := spatial-distance($t1.sender_location, $t2.sender_location)
+        order by $d desc
+        limit 10 
+	return $t2.message_text
+}

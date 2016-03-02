@@ -1,0 +1,16 @@
+let $p := create-point(
+@PARAM
+, 
+@PARAM
+)
+let $r := create-circle($p, 
+@PARAM
+)
+
+for $t in dataset ChirpMessages
+where 
+spatial-intersect($t.sender_location, $r)
+return {
+"username": $t.user.screen_name,   
+"chirp": $t.message_text
+}

@@ -3,7 +3,10 @@ package structure;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -14,8 +17,8 @@ public class StatsCollector {
 
     int ignore; //number of beginning iteration to ignore in average report
     HashMap<Pair, QueryStat> qvToStat;
-    String statsFile; //File to eventually dump final results
-    int counter; //for tracing
+    String statsFile; //the file to eventually dump final results into
+    int counter; //for tracing purpose only
 
     public StatsCollector(String statsFile, int ignore) {
         this.qvToStat = new HashMap<Pair, QueryStat>();
@@ -46,9 +49,12 @@ public class StatsCollector {
             if (startRound != 0) {
                 ignore = -1;
             }
-            StringBuffer tsb = new StringBuffer("Results\n");
-            tsb.append("\n\nResponse Times\n");
-            StringBuffer avgsb = new StringBuffer("Avg Times (ignore first " + ignore + " rounds)\n");
+            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+            Date dateobj = new Date();
+            String currentTime = df.format(dateobj);
+            StringBuffer tsb = new StringBuffer(currentTime);
+            tsb.append("\n\nResponse Times (in ms per iteration)\n");
+            StringBuffer avgsb = new StringBuffer("Avg Times (first " + ignore + " round(s) excluded)\n");
 
             Set<Pair> keys = qvToStat.keySet();
             Pair[] qvs = keys.toArray(new Pair[keys.size()]);

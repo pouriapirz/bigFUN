@@ -16,7 +16,7 @@ import workloadGenerator.AbstractUpdateWorkloadGenerator;
 
 public class AsterixUpdateClientUtility extends AbstractUpdateClientUtility {
 
-    final int TRACE_PACE = 1000;
+    final int TRACE_PACE = 5000;
 
     String ccUrl;
     DefaultHttpClient httpclient;
@@ -24,9 +24,8 @@ public class AsterixUpdateClientUtility extends AbstractUpdateClientUtility {
     int counter = 0; //for trace only
 
     public AsterixUpdateClientUtility(String cc, int batchSize, int limit, AbstractUpdateWorkloadGenerator uwg,
-            String updatesFile, String statsFile, int ignore, String resultsFile, String warmupUpdatesFile,
-            String warmupStatsFile) {
-        super(batchSize, limit, uwg, updatesFile, statsFile, ignore, resultsFile, warmupUpdatesFile, warmupStatsFile);
+            String updatesFile, String statsFile, int ignore) {
+        super(batchSize, limit, uwg, updatesFile, statsFile, ignore);
         this.ccUrl = cc;
     }
 
@@ -38,14 +37,11 @@ public class AsterixUpdateClientUtility extends AbstractUpdateClientUtility {
 
     @Override
     public void terminate() {
-        if (resPw != null) {
-            resPw.close();
-        }
         httpclient.getConnectionManager().shutdown();
     }
 
     @Override
-    public void executeUpdate(int qid, Update update, boolean isWarmup) {
+    public void executeUpdate(int qid, Update update) {
         long rspTime = Constants.INVALID_TIME;
         String updateBody = null;
         HttpResponse response;
@@ -61,7 +57,7 @@ public class AsterixUpdateClientUtility extends AbstractUpdateClientUtility {
             rspTime = (e - s);
         } catch (Exception e) {
             System.err.println("Problem in running update " + qid + " against Asterixdb !");
-            updateStat(qid, 0, Constants.INVALID_TIME, isWarmup);
+            updateStat(qid, 0, Constants.INVALID_TIME);
             return;
         }
 
@@ -70,12 +66,8 @@ public class AsterixUpdateClientUtility extends AbstractUpdateClientUtility {
             System.err.println("Update " + qid + " against Asterixdb returned http error code");
             rspTime = Constants.INVALID_TIME;
         }
-        updateStat(qid, 0, rspTime, isWarmup);
-        if (resPw != null) {
-            resPw.println(qid);
-            resPw.println(updateBody);
+        updateStat(qid, 0, rspTime);
 
-        }
         if (++counter % TRACE_PACE == 0) {
             System.out
                     .println(counter + " Updates done - last one took\t" + rspTime + " ms\tStatus-Code\t" + statusCode);
@@ -84,12 +76,11 @@ public class AsterixUpdateClientUtility extends AbstractUpdateClientUtility {
     }
 
     private String getUpdateUrl() {
-        return ("http://" + ccUrl + ":" + Constants.ASTX_REST_PORT + "/update");
+        return ("http://" + ccUrl + ":" + Constants.ASTX_AQL_REST_API_PORT + "/update");
     }
 
     @Override
     public void resetTraceCounters() {
         counter = 0;
     }
-
 }

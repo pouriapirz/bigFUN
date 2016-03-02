@@ -1,7 +1,6 @@
 package config;
 
-import asterixReadOnlyClient.AsterixClientFixedWorkload;
-import asterixReadOnlyClient.AsterixClientRandomWorkload;
+import asterixReadOnlyClient.AsterixClientReadOnlyWorkload;
 import asterixUpdateClient.AsterixClientUpdateWorkload;
 import client.AbstractReadOnlyClient;
 import client.AbstractUpdateClient;
@@ -13,16 +12,46 @@ public class AsterixClientConfig extends AbstractClientConfig {
         super(clientConfigFile);
     }
 
-    public AbstractReadOnlyClient readReadOnlyClientConfig() {
-        //common params 
-        String clientTypeTag = (String) getParamValue(Constants.CLIENT_TYPE);
+    public AbstractReadOnlyClient readReadOnlyClientConfig(String bigFunHomePath) {
         String cc = (String) getParamValue(Constants.CC_URL);
-        String qIxFile = (String) getParamValue(Constants.Q_IX_FILE);
-        String statsFile = (String) getParamValue(Constants.STATS_FILE);
-        String qSeqFile = (String) getParamValue(Constants.Q_SEQ_FILE);
-        String dumpDirFile = (String) getParamValue(Constants.DUMP_DIR_FILE);
-        String resultsFile = (String) getParamValue(Constants.RESULTS_DUMP_FILE);
         String dvName = (String) getParamValue(Constants.ASTX_DV_NAME);
+        int iter = (int) getParamValue(Constants.ITERATIONS);
+
+        String qIxFile = bigFunHomePath + "/files/" + Constants.Q_IX_FILE_NAME;
+        String qGenConfigFile = bigFunHomePath + "/files/" + Constants.Q_GEN_CONFIG_FILE_NAME;
+        String workloadFile = bigFunHomePath + "/files/" + Constants.WORKLOAD_FILE_NAME;
+
+        String statsFile = bigFunHomePath + "/files/output/" + Constants.STATS_FILE_NAME;
+        if (isParamSet(Constants.STATS_FILE)) {
+            statsFile = (String) getParamValue(Constants.STATS_FILE);
+        }
+
+        long seed = Constants.DEFAULT_SEED;
+        if (isParamSet(Constants.SEED)) {
+            Object value = getParamValue(Constants.SEED);
+            if (value instanceof Long) {
+                seed = (long) value;
+            } else if (value instanceof Integer) {
+                seed = ((Integer) value).longValue();
+            } else {
+                System.err.println("WARNING: Invalid Seed value in " + Constants.BIGFUN_CONFIG_FILE_NAME
+                        + " . Using default seed value for the generator.");
+            }
+
+        }
+
+        long maxUserId = Constants.DEFAULT_MAX_GBOOK_USR_ID;
+        if (isParamSet(Constants.MAX_GBOOK_USR_ID)) {
+            Object value = getParamValue(Constants.MAX_GBOOK_USR_ID);
+            if (value instanceof Long) {
+                maxUserId = (long) value;
+            } else if (value instanceof Integer) {
+                maxUserId = ((Integer) value).longValue();
+            } else {
+                System.err.println("WARNING: Invalid " + Constants.MAX_GBOOK_USR_ID + " value in "
+                        + Constants.BIGFUN_CONFIG_FILE_NAME + " . Using the default value for the generator.");
+            }
+        }
 
         int ignore = -1;
         if (isParamSet(Constants.IGNORE)) {
@@ -35,46 +64,31 @@ public class AsterixClientConfig extends AbstractClientConfig {
         }
 
         boolean dumpResults = false;
+        String resultsFile = null;
         if (isParamSet(Constants.ASTX_DUMP_RESULTS)) {
             dumpResults = (boolean) getParamValue(Constants.ASTX_DUMP_RESULTS);
+            resultsFile = (String) getParamValue(Constants.RESULTS_DUMP_FILE);
         }
 
-        switch (clientTypeTag) {
-            case Constants.ASTX_RANDOM_CLIENT_TAG:
-                int iter = (int) getParamValue(Constants.ITERATIONS);
-                String qGenConfigFile = (String) getParamValue(Constants.Q_GEN_CONFIG_FILE);
-                AsterixClientRandomWorkload rClient = new AsterixClientRandomWorkload(cc, dvName, iter, qGenConfigFile,
-                        qIxFile, statsFile, ignore, qSeqFile, dumpDirFile, resultsFile);
+        AsterixClientReadOnlyWorkload rClient = new AsterixClientReadOnlyWorkload(cc, dvName, iter, qGenConfigFile,
+                qIxFile, statsFile, ignore, workloadFile, /*dumpDirFile,*/ resultsFile, seed, maxUserId);
 
-                rClient.setExecQuery(qExec);
-                rClient.setDumpResults(dumpResults);
-                return rClient;
-
-            case Constants.ASTX_FIXED_CLIENT_TAG:
-                AsterixClientFixedWorkload fClient = new AsterixClientFixedWorkload(cc, dvName, qIxFile, statsFile,
-                        ignore, qSeqFile, dumpDirFile, resultsFile);
-
-                fClient.setExecQuery(qExec);
-                fClient.setDumpResults(dumpResults);
-                return fClient;
-
-            default:
-                System.err.println("Unknown asterix client type " + clientTypeTag);
-                System.err.println("Valid client types are:\n");
-                System.err.println("\t" + Constants.ASTX_RANDOM_CLIENT_TAG);
-                System.err.println("\t" + Constants.ASTX_FIXED_CLIENT_TAG);
-        }
-
-        return null;
+        rClient.setExecQuery(qExec);
+        rClient.setDumpResults(dumpResults);
+        return rClient;
     }
 
     @Override
-    public AbstractUpdateClient readUpdateClientConfig() {
+    public AbstractUpdateClient readUpdateClientConfig(String bigFunHomePath) {
         String cc = (String) getParamValue(Constants.CC_URL);
         String oprType = (String) getParamValue(Constants.UPDATE_OPR_TYPE_TAG);
-        String statsFile = (String) getParamValue(Constants.STATS_FILE);
-        String resultsFile = (String) getParamValue(Constants.RESULTS_DUMP_FILE);
+
         String updatesFile = (String) getParamValue(Constants.UPDATES_FILE);
+        String statsFile = bigFunHomePath + "/files/output/" + Constants.STATS_FILE_NAME;
+        if (isParamSet(Constants.STATS_FILE)) {
+            statsFile = (String) getParamValue(Constants.STATS_FILE);
+        }
+
         String dvName = (String) getParamValue(Constants.ASTX_DV_NAME);
         String dsName = (String) getParamValue(Constants.ASTX_DS_NAME);
         String keyName = (String) getParamValue(Constants.ASTX_KEY_NAME);
@@ -102,10 +116,7 @@ public class AsterixClientConfig extends AbstractClientConfig {
             return null;
         }
 
-        String warmupUpdatesFile = (String) getParamValue(Constants.WARMUP_FILE);
-        String warmupStatsFile = (String) getParamValue(Constants.WARMUP_STATS_FILE);
-
         return new AsterixClientUpdateWorkload(cc, dvName, dsName, keyName, upTag, batchSize, limit, updatesFile,
-                statsFile, ignore, resultsFile, warmupUpdatesFile, warmupStatsFile);
+                statsFile, ignore);
     }
 }

@@ -11,51 +11,28 @@ import structure.Pair;;
 
 public abstract class AbstractReadOnlyClientUtility extends AbstractClientUtility {
 
-    public String qIndexFile;
+    private final String qIndexFile;
+    private final String qGenConfigFile;
     public ArrayList<Pair> qvids;
-    public ArrayList<String> dumpDir;
     protected boolean dumpResults = false;
 
     public abstract void executeQuery(int qid, int vid, String qBody);
 
-    public AbstractReadOnlyClientUtility(String qIxFile, String statsFile, int ignore, String qSeqFile,
-            String dumpDirFile, String resultsFile) {
+    public AbstractReadOnlyClientUtility(String qIxFile, String qGenConfigFile, String statsFile, int ignore,
+            String workloadFile, String resultsFile) {
         super(statsFile, resultsFile, ignore);
         this.qIndexFile = qIxFile;
-        loadQSeqFile(qSeqFile);
-        if (dumpDirFile != null) {
-            loadDumpDirPaths(dumpDirFile);
-        }
+        this.qGenConfigFile = qGenConfigFile;
+        loadWorkloadFile(workloadFile);
     }
 
-    private void loadDumpDirPaths(String dumpDirPaths) {
-        if (dumpDir == null) {
-            this.dumpDir = new ArrayList<String>();
-        }
-        this.dumpDir.clear();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(dumpDirPaths));
-            String str;
-            while ((str = in.readLine()) != null) {
-                if (str.startsWith(Constants.COMMENT_TAG) || (str.length() == 0)) { //ignore comment lines
-                    continue;
-                }
-                dumpDir.add(str.trim());
-            }
-            in.close();
-        } catch (IOException e) {
-            System.err.println("Error in loading dump directories in AsterixClient for Random Workloads !");
-            e.printStackTrace();
-        }
-    }
-
-    private void loadQSeqFile(String qSeqFile) {
+    private void loadWorkloadFile(String workloadFile) {
         if (qvids == null) {
             this.qvids = new ArrayList<Pair>();
         }
         this.qvids.clear();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(qSeqFile));
+            BufferedReader in = new BufferedReader(new FileReader(workloadFile));
             String str;
             while ((str = in.readLine()) != null) {
                 if (str.startsWith(Constants.COMMENT_TAG) || (str.length() == 0)) { //ignore comment lines
@@ -78,5 +55,13 @@ public abstract class AbstractReadOnlyClientUtility extends AbstractClientUtilit
 
     protected void setDumpResults(boolean b) {
         this.dumpResults = b;
+    }
+
+    public String getQIxFile() {
+        return qIndexFile;
+    }
+
+    public String getQGenConfigFile() {
+        return qGenConfigFile;
     }
 }

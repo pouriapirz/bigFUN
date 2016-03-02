@@ -18,11 +18,11 @@ public class AsterixReadOnlyClientUtility extends AbstractReadOnlyClientUtility 
     String ccUrl;
     DefaultHttpClient httpclient;
     HttpGet httpGet;
-    URIBuilder roBuilder; //ReadOnly Queries
+    URIBuilder roBuilder;
 
-    public AsterixReadOnlyClientUtility(String cc, String qIxFile, String statsFile, int ignore, String qSeqFile,
-            String dumpDirFile, String resultsFile) {
-        super(qIxFile, statsFile, ignore, qSeqFile, dumpDirFile, resultsFile);
+    public AsterixReadOnlyClientUtility(String cc, String qIxFile, String qGenConfigFile, String statsFile, int ignore,
+            String qSeqFile, String resultsFile) {
+        super(qIxFile, qGenConfigFile, statsFile, ignore, qSeqFile, resultsFile);
         this.ccUrl = cc;
     }
 
@@ -31,7 +31,7 @@ public class AsterixReadOnlyClientUtility extends AbstractReadOnlyClientUtility 
         httpclient = new DefaultHttpClient();
         httpGet = new HttpGet();
         try {
-            roBuilder = new URIBuilder("http://" + ccUrl + ":" + Constants.ASTX_REST_PORT + "/query");
+            roBuilder = new URIBuilder("http://" + ccUrl + ":" + Constants.ASTX_AQL_REST_API_PORT + "/query");
         } catch (URISyntaxException e) {
             System.err.println("Problem in initializing Read-Only URI Builder");
             e.printStackTrace();
@@ -79,8 +79,7 @@ public class AsterixReadOnlyClientUtility extends AbstractReadOnlyClientUtility 
                 resPw.println(content + "\n");
             }
         }
-        //Prints it on the screen to trace the progress
-        System.out.println("Q" + qid + " version " + vid + "\t" + rspTime);
+        System.out.println("Q" + qid + " version " + vid + "\t" + rspTime); //trace the progress
 
     }
 }

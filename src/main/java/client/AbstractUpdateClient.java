@@ -9,8 +9,7 @@ public abstract class AbstractUpdateClient extends AbstractClient {
     public AbstractUpdateClient() {
     }
 
-    protected abstract void setClientUtil(int batchSize, int limit, String updatesFile, String statsFile, int ignore,
-            String resultsFile);
+    protected abstract void setClientUtil(int batchSize, int limit, String updatesFile, String statsFile, int ignore);
 
     protected abstract void initUpdateWorkloadGen();
 

@@ -1,0 +1,13 @@
+{
+"clientType" : "AsterixdbUpdate",
+"cc" : "127.0.0.1",
+"batch_size" : 5,
+"limit" : -1,
+"ignore_rounds" : 100,
+"dataverse" : "SocialNetworkData",
+"dataset" : "GleambookUsers",
+"primary_key" : "id",
+"operation" : "insert",
+"updates_file" : "/tmp/bigFUN/files/inserts.adm",
+"stats_file" : "/tmp/bigFUN/files/stats.txt"
+}

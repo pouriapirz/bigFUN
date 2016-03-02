@@ -5,11 +5,12 @@ import java.util.StringTokenizer;
 import config.Constants;
 
 /**
- * Parses an argument from a string which had been created with dump format
+ * Parses an argument from a (dumped) string
  * 
  * @author pouria
  */
 public class ArgumentParser {
+
     public static DateTimeArgument parseDateTime(String arg) {
         StringTokenizer st = new StringTokenizer(arg, Constants.ARG_DATETIME_DUMP_DELIM);
         int argY = Integer.parseInt(st.nextToken());

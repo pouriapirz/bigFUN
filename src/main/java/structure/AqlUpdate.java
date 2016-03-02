@@ -10,7 +10,7 @@ public class AqlUpdate extends Update {
     private String dvName;
     private String dsName;
     private String keyName; //for delete (set to null for insert)
-    private ArrayList<String> updates; //Adm records to insert, or keys to delete
+    private ArrayList<String> updates; //full adm records to insert, or primary keys to delete
 
     public AqlUpdate(String dv, String ds, String key, UpdateTag t) {
         super(t);

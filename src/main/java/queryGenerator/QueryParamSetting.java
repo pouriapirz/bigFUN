@@ -21,6 +21,10 @@ public class QueryParamSetting {
     }
 
     public ArrayList<Integer> getParam(int qid, int vid) {
+        if (!map.containsKey(qid)) {
+            System.err.println("No query parameter(s) is provided for q" + qid);
+            return null;
+        }
         return map.get(qid).get(vid);
     }
 

@@ -1,18 +1,17 @@
-package asterixUpdateClient;
+package workloadGenerator;
 
 import structure.AqlUpdate;
 import structure.Update;
 import structure.UpdateTag;
-import workloadGenerator.AbstractUpdateWorkloadGenerator;
 
-public class AsterixUpdateWorkloadGenerator extends AbstractUpdateWorkloadGenerator {
+public class UpdateWorkloadGenerator extends AbstractUpdateWorkloadGenerator {
 
     private String dvName;
     private String dsName;
     private String keyName; //for delete (set to null for insert)
     UpdateTag upTag;
 
-    public AsterixUpdateWorkloadGenerator(String dv, String ds, String key, UpdateTag tag) {
+    public UpdateWorkloadGenerator(String dv, String ds, String key, UpdateTag tag) {
         super();
         this.dvName = dv;
         this.dsName = ds;

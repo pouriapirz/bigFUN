@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 import config.Constants;
+import datatype.ArgumentParser;
 import datatype.DateTimeArgument;
 import datatype.DoubleArgument;
 import datatype.IArgument;
@@ -19,12 +20,16 @@ public class RandomQueryGenerator {
     long MAX_FB_USR_ID;
 
     Random rand;
+    long seed;
     ArrayList<IArgument> args;
 
     QueryParamSetting qps;
 
-    public RandomQueryGenerator() {
-        this.rand = new Random(System.currentTimeMillis());
+    public RandomQueryGenerator(long seed, long maxUsrId) {
+        this.rand = new Random(seed);
+        setStartDate(ArgumentParser.parseDateTime(Constants.DEFAULT_START_DATE));
+        setEndDate(ArgumentParser.parseDateTime(Constants.DEFAULT_END_DATE));
+        setMaxFbuId(maxUsrId);
         this.args = new ArrayList<IArgument>();
     }
 
@@ -38,7 +43,7 @@ public class RandomQueryGenerator {
             case 102: //PK range scan
                 nextQ102(qIx, vIx);
                 break;
-            case 103: //non-unique att range scan
+            case 103: //non-unique temporal attribute range scan
                 nextQ103(qIx, vIx);
                 break;
             case 104: //e-quantification
@@ -47,10 +52,10 @@ public class RandomQueryGenerator {
             case 105: //u-quantification 
                 nextQ105(qIx, vIx);
                 break;
-            case 106: //global agg
+            case 106: //global aggregation
                 nextQ106(qIx, vIx);
                 break;
-            case 107: //grp and agg
+            case 107: //grp and aggregation
                 nextQ107(qIx, vIx);
                 break;
             case 108: //top-k
@@ -62,35 +67,27 @@ public class RandomQueryGenerator {
             case 1010: //exact text search
                 nextQ1010(vIx);
                 break;
-            case 2010: //text similarity search
-                nextQ1010(vIx);
+            case 1011: //text similarity search
+                nextQ1011(vIx);
                 break;
-            case 1011: //equi-join
-                nextQ1011(qIx, vIx);
-                break;
-            case 2011: //equi-IX-join
-                nextQ1011(qIx, vIx);
-                break;
-            case 1012: //LOJ
+            case 1012: //equi-join
+            case 2012: //equi-IX-join
                 nextQ1012(qIx, vIx);
                 break;
-            case 2012: //LOJ-IX
-                nextQ1012(qIx, vIx);
-                break;
-            case 1013: //join and grp
+            case 1013: //left-Outer-Join
+            case 2013: //left-Outer-IX-Join
                 nextQ1013(qIx, vIx);
                 break;
-            case 3013: //join-IX and grp
-                nextQ1013(qIx, vIx);
-                break;
-            case 1020: //join and top-k
-                nextQ1020(qIx, vIx);
-                break;
-            case 3020: //join-IX and top-k
-                nextQ1020(qIx, vIx);
-                break;
-            case 1014: //Spatial Join
+            case 1014: //join and grp
+            case 2014: //IX-join and grp
                 nextQ1014(qIx, vIx);
+                break;
+            case 1015: //join and top-k
+            case 2015: //IX-join and top-k
+                nextQ1015(qIx, vIx);
+                break;
+            case 1016: //spatial Join
+                nextQ1016(qIx, vIx);
                 break;
             default:
                 return null;
@@ -171,7 +168,11 @@ public class RandomQueryGenerator {
         args.add(getKeyword(vid));
     }
 
-    private void nextQ1013(int qid, int vid) {
+    private void nextQ1011(int vid) {
+        args.add(getKeyword(vid));
+    }
+
+    private void nextQ1014(int qid, int vid) {
         DateTimeArgument s = randomDateTime(START_DATE, END_DATE);
         ArrayList<Integer> p = qps.getParam(qid, vid);
         DateTimeArgument e = shift(s, p.get(0));
@@ -183,7 +184,7 @@ public class RandomQueryGenerator {
         args.add(e2);
     }
 
-    private void nextQ1020(int qid, int vid) {
+    private void nextQ1015(int qid, int vid) {
         DateTimeArgument s = randomDateTime(START_DATE, END_DATE);
         ArrayList<Integer> p = qps.getParam(qid, vid);
         DateTimeArgument e = shift(s, p.get(0));
@@ -191,19 +192,6 @@ public class RandomQueryGenerator {
         DateTimeArgument e2 = shift(s2, p.get(1));
         args.add(s);
         args.add(e);
-        args.add(s2);
-        args.add(e2);
-    }
-
-    private void nextQ1011(int qid, int vid) {
-        DateTimeArgument s1 = randomDateTime(START_DATE, END_DATE);
-        ArrayList<Integer> p = qps.getParam(qid, vid);
-        DateTimeArgument e1 = shift(s1, p.get(0));
-        DateTimeArgument s2 = randomDateTime(START_DATE, END_DATE);
-        DateTimeArgument e2 = shift(s2, p.get(1));
-
-        args.add(s1);
-        args.add(e1);
         args.add(s2);
         args.add(e2);
     }
@@ -221,7 +209,20 @@ public class RandomQueryGenerator {
         args.add(e2);
     }
 
-    private void nextQ1014(int qid, int vid) {
+    private void nextQ1013(int qid, int vid) {
+        DateTimeArgument s1 = randomDateTime(START_DATE, END_DATE);
+        ArrayList<Integer> p = qps.getParam(qid, vid);
+        DateTimeArgument e1 = shift(s1, p.get(0));
+        DateTimeArgument s2 = randomDateTime(START_DATE, END_DATE);
+        DateTimeArgument e2 = shift(s2, p.get(1));
+
+        args.add(s1);
+        args.add(e1);
+        args.add(s2);
+        args.add(e2);
+    }
+
+    private void nextQ1016(int qid, int vid) {
         DateTimeArgument s = randomDateTime(START_DATE, END_DATE);
         int shift = qps.getParam(qid, vid).get(0);
         DateTimeArgument e = shift(s, shift);

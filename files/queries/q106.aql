@@ -1,0 +1,9 @@
+avg(
+ for $t in dataset ChirpMessages
+ where $t.send_time >=
+@PARAM
+ and
+ $t.send_time <
+@PARAM
+ return string-length($t.message_text)
+)

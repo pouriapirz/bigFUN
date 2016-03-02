@@ -1,0 +1,18 @@
+for $message in dataset GleambookMessages
+for $user in dataset GleambookUsers
+where $message.author_id /*+ indexnl */  = $user.id and
+$user.user_since >= 
+@PARAM
+and
+$user.user_since <
+@PARAM
+and
+$message.send_time >=
+@PARAM
+and
+$message.send_time <
+@PARAM
+return {
+"username": $user.name,
+"message": $message.message
+}

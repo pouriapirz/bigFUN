@@ -1,0 +1,10 @@
+for $t in dataset ChirpMessages
+where contains($t.message_text, 
+@PARAM
+)
+order by $t.send_time desc
+limit 10 
+return {
+"time": $t.send_time,
+"chirp": $t.message_text
+}

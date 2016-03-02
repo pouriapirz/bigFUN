@@ -1,0 +1,13 @@
+for $user in dataset GleambookUsers
+where 
+      (some $e in $user.employment
+      satisfies is-null($e.end_date)) and
+      $user.user_since >= 
+@PARAM 
+and
+      $user.user_since <
+@PARAM
+return {
+"uname": $user.name,
+"emp": $user.employment
+}

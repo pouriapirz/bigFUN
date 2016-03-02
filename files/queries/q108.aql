@@ -1,0 +1,15 @@
+for $t in dataset ChirpMessages
+where $t.send_time >=
+@PARAM
+and
+$t.send_time <
+@PARAM
+let $m := string-length( $t.message_text )
+group by $uname := $t.user.screen_name with $m
+let $a := avg($m)
+order by $a desc
+limit 10
+return {
+    "username": $uname,
+    "avg": $a
+}

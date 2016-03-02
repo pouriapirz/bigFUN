@@ -1,0 +1,12 @@
+{
+"clientType" : "AsterixdbReadOnly",
+"cc" : "127.0.0.1",
+"dataverse" : "SocialNetworkData",
+"iterations" : 3,
+"ignore_rounds" : 1,
+"seed" : 5,
+"max_gleambookUser_id" : 100000,
+"stats_file" : "/tmp/bigFUN/files/stats.txt",
+"dumpResults" : true,
+"res_dump_file" : "/tmp/bigFUN/files/res_dump.txt"
+}

@@ -1,16 +1,11 @@
 package config;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import datatype.ArgumentParser;
 import queryGenerator.QueryParamSetting;
 import queryGenerator.RandomQueryGenerator;
 
@@ -22,46 +17,7 @@ import queryGenerator.RandomQueryGenerator;
 public class RandomQueryGeneratorConfig {
 
     public static void configure(RandomQueryGenerator rqGen, String configFile) throws IOException {
-        Map<String, Object> params = null;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            params = mapper.readValue(new File(configFile), Map.class);
-        } catch (Exception e) {
-            System.err.println("Problem in parsing the JSON query generator config file.");
-            e.printStackTrace();
-        }
-
-        if (params.containsKey(Constants.START_DATE)) {
-            String stDate = (String) params.get(Constants.START_DATE);
-            rqGen.setStartDate(ArgumentParser.parseDateTime(stDate));
-        } else {
-            rqGen.setStartDate(ArgumentParser.parseDateTime(Constants.DEFAULT_START_DATE));
-            System.err.println("WARNING: Could not find START_DATE in qGenConfig - Using the default START_DATE.");
-        }
-
-        if (params.containsKey(Constants.END_DATE)) {
-            String enDate = (String) params.get(Constants.END_DATE);
-            rqGen.setEndDate(ArgumentParser.parseDateTime(enDate));
-        } else {
-            rqGen.setEndDate(ArgumentParser.parseDateTime(Constants.DEFAULT_END_DATE));
-            System.err.println("WARNING: Could not find END_DATE in qGenConfig - Using the default END_DATE.");
-        }
-
-        if (params.containsKey(Constants.MAX_FBU_ID)) {
-            long maxUId = (long) params.get(Constants.MAX_FBU_ID);
-            rqGen.setMaxFbuId(maxUId);
-        } else {
-            rqGen.setMaxFbuId(Constants.DEFAULT_MAX_FB_USR_ID);
-            System.err.println("WARNING: Could not find MAX USER ID in qGenConfig - Using the default MAX USER ID.");
-        }
-
-        if (params.containsKey(Constants.QPARAM_SETTINGS_FILE)) {
-            String qParamsFile = (String) params.get(Constants.QPARAM_SETTINGS_FILE);
-            rqGen.setQParamSetting(parseQParamSettings(qParamsFile));
-        } else {
-            System.err.println(
-                    "ERROR: No QUERY_PARAMS_FILE is specified in qGenConfig file - The query generation can not proceed !");
-        }
+        rqGen.setQParamSetting(parseQParamSettings(configFile));
     }
 
     //Each line should have the following format
