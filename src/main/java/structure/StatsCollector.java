@@ -49,13 +49,13 @@ public class StatsCollector {
             if (startRound != 0) {
                 ignore = -1;
             }
-            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+            DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
             Date dateobj = new Date();
             String currentTime = df.format(dateobj);
-            StringBuffer tsb = new StringBuffer(currentTime);
-            tsb.append("\n\nResponse Times (in ms per iteration)\n");
-            StringBuffer avgsb = new StringBuffer("Avg Times (first " + ignore + " round(s) excluded)\n");
-
+            StringBuffer tsb = new StringBuffer();
+            tsb.append("Response Times (in ms per iteration)\n");
+            StringBuffer avgsb = new StringBuffer(currentTime);
+            avgsb.append("\n\nAvg Times (first " + ignore + " round(s) excluded)\n");
             Set<Pair> keys = qvToStat.keySet();
             Pair[] qvs = keys.toArray(new Pair[keys.size()]);
             Arrays.sort(qvs);
@@ -68,12 +68,11 @@ public class StatsCollector {
                     avgsb.append("Q").append(p.toString()).append("\t").append(partialAvg).append("\n");
                 }
             }
-            pw.println(tsb.toString());
-            pw.println("\n");
             if (avgsb != null) {
                 pw.println(avgsb.toString());
                 pw.println("\n");
             }
+            pw.println(tsb.toString());
             pw.close();
 
         } catch (IOException e) {
