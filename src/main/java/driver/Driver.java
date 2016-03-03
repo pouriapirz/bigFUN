@@ -26,7 +26,6 @@ public class Driver {
         AbstractClient client = null;
         switch (clientTypeTag) {
             case Constants.ASTX_RANDOM_CLIENT_TAG:
-                //case Constants.ASTX_FIXED_CLIENT_TAG:
                 client = clientConfig.readReadOnlyClientConfig(bigFunHome);
                 break;
             case Constants.ASTX_UPDATE_CLIENT_TAG:
