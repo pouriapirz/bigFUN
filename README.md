@@ -69,5 +69,5 @@ Upon a successful build, a new directory named 'target' will be created under BI
   ```
   > $BIGFUN_HOME/scripts/run-bigfun.sh
   ```
-As client runs, it shows messages (for tracing its progress) on the screen and once it finishes successfuly, the summary report on the test's statistics can be found in file path which is set as 'stats_file' in 'bigfun-conf.json' (if 'stats_file' is not set by the user, the client writes it into its default location under the '$BIGFUN_HOME/files/output' directory).
+As client runs, it shows messages (for tracing its progress) on the screen and once it finishes successfully, the summary report on the test's statistics can be found in file path which is set as 'stats_file' in 'bigfun-conf.json' (if 'stats_file' is not set by the user, the client writes it into its default location under the '$BIGFUN_HOME/files/output' directory).
 
