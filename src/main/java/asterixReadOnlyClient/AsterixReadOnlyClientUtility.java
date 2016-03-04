@@ -59,8 +59,8 @@ public class AsterixReadOnlyClientUtility extends AbstractReadOnlyClientUtility 
             HttpResponse response = httpclient.execute(httpGet);
             HttpEntity entity = response.getEntity();
             content = EntityUtils.toString(entity);
-            long e = System.currentTimeMillis();
             EntityUtils.consume(entity);
+            long e = System.currentTimeMillis();
 
             rspTime = (e - s);
 
